@@ -11,7 +11,8 @@ import SwiftUI
 struct ConstellationView: View {
     /* in this test the following are fixed
     constellation name */
-    var constellation = "Orion"
+    // changed to @state to allow update of value
+    @State private var constellation = "Orion"
     // createa a CGPoint for the 'star'
     var starPosition:CGPoint = CGPoint(x: 200.0, y: 200.0)
     /* setting the point size
@@ -21,6 +22,18 @@ struct ConstellationView: View {
     colour or opacity. The latter approaches
     would have a greater range than size */
     var starSize :CGSize = CGSize(width: 4, height: 4)
+    //added to test position of touch
+    @State private var location: CGPoint = .zero
+    
+    //added to test touch in canvas
+    private func setConstellation(_ name: String) {
+        self.constellation = name
+    }
+    
+    //added to change location after touch
+    private func onChanged(value: DragGesture.Value) {
+            location = value.location
+        }
     
     var body: some View {
         VStack {
@@ -57,7 +70,11 @@ struct ConstellationView: View {
                     Path(ellipseIn: CGRect(origin: starPosition, size: starSize)),
                     with: .color(.white))
             }
-            Text(constellation)
+            .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                .onChanged({ value in
+                let location: CGPoint = value.location
+                self.setConstellation( "touched at \(location)")}))
+            Text(self.constellation)
         }
     }
 }
